@@ -1,5 +1,6 @@
 /*
- * HW1.c
+ * HW1a.c
+ * Make individual processes print
  * Homework 1
  * Ashton Cole
  * COE 379L: Parallel Computing
