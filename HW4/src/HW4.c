@@ -113,25 +113,6 @@ int main(int argc, char **argv) {
 		// If at least one has swapped, reset
                 hnswp_cnt = all_hnswp ? hnswp_cnt + 1 : 0;
 
-		// Gather and display to the user
-                MPI_Gather(
-                                &item,
-                                1,
-                                MPI_DOUBLE,
-                                list,
-                                1,
-                                MPI_DOUBLE,
-                                root,
-                                comm
-                          );
-                if (isroot) {
-                        printf("List after even-odd: {");
-                        for (int i = 0; i < nprocs - 1; i++) {
-                                printf("%f, ", list[i]);
-                        }
-                        printf("%f}\n", list[nprocs - 1]);
-                }
-		
 		// Save some effort
 		if (hnswp_cnt >= 2) break;
 
@@ -185,25 +166,6 @@ int main(int argc, char **argv) {
 
 		// If at least one has swapped, reset
 		hnswp_cnt = all_hnswp ? hnswp_cnt + 1 : 0;
-
-		// Gather and display to the user
-	        MPI_Gather(
-	                        &item,
-	                        1,
-	                        MPI_DOUBLE,
-	                        list,
-	                        1,
-	                        MPI_DOUBLE,
-	                        root,
-	                        comm
-	                  );
-		if (isroot) {
-                        printf("List after odd-even: {");
-                        for (int i = 0; i < nprocs - 1; i++) {
-                                printf("%f, ", list[i]);
-                        }
-                        printf("%f}\n", list[nprocs - 1]);
-                }
 	}
 
 	// Gather and display to the user
