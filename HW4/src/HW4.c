@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
 	int iseven = procno % 2 == 0;
 
 	// Each processor gets an item in the list
-	double *list = isroot ? 
+	double *list = isroot ?
 		(double *) malloc(nprocs * sizeof(double)) :
 		NULL;
 	srand((int) (procno * (double) RAND_MAX / nprocs));
@@ -31,52 +31,51 @@ int main(int argc, char **argv) {
 	double new;
 	
 	// Gather and display to the user
-	printf("procno = %d\n - isroot = %d\n - iseven = %d\n", procno, isroot, iseven);/*
 	MPI_Gather(
-			&item,
+			&item, // Note that this is not a pointer
 			1,
 			MPI_DOUBLE,
-			&list,
+			list, // Note that this is a pointer
 			1,
 			MPI_DOUBLE,
 			root,
 			comm
 		  );
-	printf("procno = %d\n - isroot = %d\n - iseven = %d\n", procno, isroot, iseven);*/
-	/* if (isroot) {
+	if (isroot) {
 		printf("List before sort: {");
 		int i;
 		for (i = 0; i < nprocs - 1; i++) {
-			//printf("%f, ", list[i]);
+			printf("%f, ", list[i]);
 		}
-		//printf("%f}\n", list[nprocs - 1]);
-	} */
+		printf("%f}\n", list[nprocs - 1]);
+	}
 
-	int done = 0;
 	int hnswp; // Has this processor not exchanged values this round?
+	int all_hnswp; // Has no processor exchanged valuse this round
+	int hnswp_cnt = 0; // After two rounds (even-odd and odd-even), we know we are done
+			   // Normally one round of no swaps suffices
+			   // Except if you start like this
+			   // [1, 3, 2, 4] -> hnswp_cnt = 0
+			   // Even- odd
+			   // [1, 3, 2, 4] -> hnswp_cnt = 1
 
-	int sendto, recvfr;
-
-	int count = 0;
-	printf("Proc %d starting loop\n", procno);	
-	while (!done && count < 100) {
-		count = count + 1;
-
-		// Even-odd: 2i and 2i + 1 might swap
-		sendto = iseven ? procno + 1 : MPI_PROC_NULL;
-		if (sendto < 0 || sendto >= nprocs) sendto = MPI_PROC_NULL;
-		recvfr = !iseven ? procno - 1 : MPI_PROC_NULL;
-		if (recvfr < 0 || recvfr >= nprocs) recvfr = MPI_PROC_NULL;
+	int partner; // Note swapping is mutual
+	
+	while (hnswp_cnt < 2) {
+		// Even-odd: 2i and 2i + 1 might swap	
+		new = item; // Necessary reset for non-swaps
+		partner = iseven ? procno + 1 : procno - 1;
+		if (partner < 0 || partner >= nprocs) partner = MPI_PROC_NULL;
 		MPI_Sendrecv(
 				&item,
 				1,
 				MPI_DOUBLE,
-				sendto,
+				partner,
 				0,
 				&new,
 				1,
 				MPI_DOUBLE,
-				recvfr,
+				partner,
 				0,
 				comm,
 				MPI_STATUS_IGNORE
@@ -104,31 +103,52 @@ int main(int argc, char **argv) {
 		// We are done
 		MPI_Allreduce(
 				&hnswp,
-				&done,
+				&all_hnswp,
 				1,
 				MPI_INT,
 				MPI_LAND,
 				comm
 			     );
 
+		// If at least one has swapped, reset
+                hnswp_cnt = all_hnswp ? hnswp_cnt + 1 : 0;
+
+		// Gather and display to the user
+                MPI_Gather(
+                                &item,
+                                1,
+                                MPI_DOUBLE,
+                                list,
+                                1,
+                                MPI_DOUBLE,
+                                root,
+                                comm
+                          );
+                if (isroot) {
+                        printf("List after even-odd: {");
+                        for (int i = 0; i < nprocs - 1; i++) {
+                                printf("%f, ", list[i]);
+                        }
+                        printf("%f}\n", list[nprocs - 1]);
+                }
+		
 		// Save some effort
-		if (done) break;
+		if (hnswp_cnt >= 2) break;
 
 		// Odd-even: 2i + 1 and 2i + 2 might swap
-		sendto = !iseven ? procno + 1 : MPI_PROC_NULL;
-		if (sendto < 0 || sendto >= nprocs) sendto = MPI_PROC_NULL;
-		recvfr = iseven ? procno - 1 : MPI_PROC_NULL;
-		if (recvfr < 0 || recvfr >= nprocs) recvfr = MPI_PROC_NULL;
+		new = item; // Necessary reset for non-swaps
+		partner = !iseven ? procno + 1 : procno - 1;
+		if (partner < 0 || partner >= nprocs) partner = MPI_PROC_NULL;
 		MPI_Sendrecv(
 				&item,
 				1,
 				MPI_DOUBLE,
-				sendto,
+				partner,
 				0,
 				&new,
 				1,
 				MPI_DOUBLE,
-				recvfr,
+				partner,
 				0,
 				comm,
 				MPI_STATUS_IGNORE
@@ -156,12 +176,34 @@ int main(int argc, char **argv) {
 		// We are done
 		MPI_Allreduce(
 				&hnswp,
-				&done,
+				&all_hnswp,
 				1,
 				MPI_INT,
 				MPI_LAND,
 				comm
 			     );
+
+		// If at least one has swapped, reset
+		hnswp_cnt = all_hnswp ? hnswp_cnt + 1 : 0;
+
+		// Gather and display to the user
+	        MPI_Gather(
+	                        &item,
+	                        1,
+	                        MPI_DOUBLE,
+	                        list,
+	                        1,
+	                        MPI_DOUBLE,
+	                        root,
+	                        comm
+	                  );
+		if (isroot) {
+                        printf("List after odd-even: {");
+                        for (int i = 0; i < nprocs - 1; i++) {
+                                printf("%f, ", list[i]);
+                        }
+                        printf("%f}\n", list[nprocs - 1]);
+                }
 	}
 
 	// Gather and display to the user
@@ -169,7 +211,7 @@ int main(int argc, char **argv) {
 			&item,
 			1,
 			MPI_DOUBLE,
-			&list,
+			list,
 			1,
 			MPI_DOUBLE,
 			root,
@@ -178,9 +220,9 @@ int main(int argc, char **argv) {
 	if (isroot) {
 		printf("List after sort: {");
 		for (int i = 0; i < nprocs - 1; i++) {
-			//printf("%f, ", list[i]);
+			printf("%f, ", list[i]);
 		}
-		//printf("%f}\n", list[nprocs - 1]);
+		printf("%f}\n", list[nprocs - 1]);
 		free(list);
 	}
   
