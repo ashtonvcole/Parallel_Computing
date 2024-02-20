@@ -1,6 +1,0 @@
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW3/build/CMakeFiles/HW3.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW3/build/CMakeFiles/edit_cache.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW3/build/CMakeFiles/rebuild_cache.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW3/build/tools/CMakeFiles/tools.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW3/build/tools/CMakeFiles/edit_cache.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW3/build/tools/CMakeFiles/rebuild_cache.dir

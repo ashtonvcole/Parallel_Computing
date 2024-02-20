@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/HW2.dir/HW2.c.o -o HW2  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib: libtools.a /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 

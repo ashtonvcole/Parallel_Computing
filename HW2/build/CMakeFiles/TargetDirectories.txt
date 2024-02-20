@@ -1,8 +1,0 @@
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW2/build/CMakeFiles/HW2.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW2/build/CMakeFiles/tools.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW2/build/CMakeFiles/edit_cache.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW2/build/CMakeFiles/rebuild_cache.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW2/build/CMakeFiles/list_install_components.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW2/build/CMakeFiles/install.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW2/build/CMakeFiles/install/local.dir
-/home/ashton/Documents/School/COE_379L_parallel/Parallel_Computing/HW2/build/CMakeFiles/install/strip.dir
