@@ -1,0 +1,1 @@
+/Library/Developer/CommandLineTools/usr/bin/cc  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/HW5.dir/HW5.c.o -o HW5  tools/libtools.a /opt/homebrew/Cellar/open-mpi/5.0.1/lib/libmpi.dylib 
