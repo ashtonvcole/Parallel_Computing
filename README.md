@@ -12,4 +12,5 @@ This repository contains assignments from COE 379L: Parallel Computing with Vict
 - [HW2](/HW2): A random matrix equation solver using the full Gauss-Jordan method.
 - [HW3](/HW3): A program demonstrating `MPI_Scan()`- and `MPI_Gather()`-type routines.
 - [HW4](/HW4): A program implementing a bubble sort using the non-blocking send routine `MPI_sendrecv()`.
-- [HW5](/homework5): A program conducting a [stencil operation](https://en.wikipedia.org/wiki/Iterative_Stencil_Loops) using the non-blocking send routies `MPI_Isend()` and `MPI_Irecv()`.
+- [HW5](/homework5): A program conducting a [stencil operation](https://en.wikipedia.org/wiki/Iterative_Stencil_Loops) using the non-blocking send routines `MPI_Isend()` and `MPI_Irecv()`.
+- [HW6](/homework6): A program which distributes array elements amongst processors in an interleaved fashion.
