@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage{graphicx, float} % Required for inserting images
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage{amsmath, multirow, physics, placeins}
+
+\title{COE 379L: Homework 7}
+\author{Ashton Cole}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+\section{Methodology}
+
+\subsection{Setup and Execution}
+
+\subsection{Jacobi Method}
+
+\subsection{Parallelization}
+
+\section{Results}
+
+\subsection{Exercise 8: Speedup Tests}
+
+\begin{table}[h!]
+	\centering
+	\caption{Parallelization speedup tests for various problem sizes.}
+	\label{tbl:speedup}
+	\begin{tabular}{r|ccc}
+		Vector Size & 100 & 100,000 & 1,000,000 \\
+		\hline
+		Threads & \multicolumn{3}{c}{Elapsed Time (s)} \\
+		\hline
+		1 & 0.007 & 2.526 & 24.719 \\
+		2 & 0.047 & 1.321 & 12.524 \\
+		4 & 0.066 & 0.737 & 6.456 \\
+		8 & 0.139 & 0.709 & 4.715 \\
+		12 & 0.213 & 0.727 & 3.605
+	\end{tabular}
+\end{table}
+
+\subsection{Exercise 9: Performance Improvements}
+
+\begin{table}[h!]
+	\centering
+	\caption{The impact of performance improvements on a large problem size.}
+	\label{tbl:speedup}
+	\begin{tabular}{r|cccc}
+		Case & n = 1,000,000 & a & b & c \\
+		\hline
+		Threads & \multicolumn{3}{c}{Elapsed Time (s)} \\
+		\hline
+		1 & 24.719 & 23.736 &  &  \\
+		2 & 12.524 & 11.900 &  &  \\
+		4 & 6.456 & 6.093 &  &  \\
+		8 & 4.715 & 4.693 &  &  \\
+		12 & 3.605 & 3.401 &  & 
+	\end{tabular}
+\end{table}
+
+\subsection{Exercise 10: Scheduling Improvements}
+
+\subsection{Exercise 11: Full Parallelization}
+
+\section{Conclusions}
+\end{document}
