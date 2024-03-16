@@ -29,11 +29,11 @@
 	\caption{Parallelization speedup tests for various problem sizes.}
 	\label{tbl:speedup}
 	\begin{tabular}{r|ccc}
-		Vector Size & 100 & 100,000 & 1,000,000 \\
+		Vector Size & 100 & 100,000 & 100,000,000 \\
 		\hline
 		Threads & \multicolumn{3}{c}{Elapsed Time (s)} \\
 		\hline
-		1 & 0.007 & 2.526 & 24.719 \\
+		1 & 0.: & 2.526 & 24.719 \\
 		2 & 0.047 & 1.321 & 12.524 \\
 		4 & 0.066 & 0.737 & 6.456 \\
 		8 & 0.139 & 0.709 & 4.715 \\
@@ -48,7 +48,7 @@
 	\caption{The impact of performance improvements on a large problem size.}
 	\label{tbl:speedup}
 	\begin{tabular}{r|cccc}
-		Case & n = 1,000,000 & a & b & c \\
+		Case & n = 1,000,000 & \verb|nowait| & Affinity & First-Touch \\
 		\hline
 		Threads & \multicolumn{3}{c}{Elapsed Time (s)} \\
 		\hline
