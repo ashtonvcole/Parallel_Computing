@@ -26,13 +26,11 @@ int main(int argc, char **argv) {
 	// Since A is tri-diagoinal in the form above,
 	// RHS must be diag - 2
 #pragma omp parallel for
-	{
-		for (long int i = 0; i < vectorsize; i++) {
-			solution[i] = 1.;
-			rhs[i] = diag - 2.;
-			xvector[i] = i * 1. / vectorsize; // Initial guess
-							  // Not necessarily good
-		}
+	for (long int i = 0; i < vectorsize; i++) {
+		solution[i] = 1.;
+		rhs[i] = diag - 2.;
+		xvector[i] = i * 1. / vectorsize; // Initial guess
+						  // Not necessarily good
 	}
 	rhs[0] = diag - 1.;
 	rhs[vectorsize - 1] = diag - 1.;
