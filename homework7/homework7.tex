@@ -49,16 +49,16 @@
 	\caption{The impact of performance improvements on a large problem size.}
 	\label{tbl:speedup}
 	\begin{tabular}{r|cccccc}
-		Case & n = 10,000,000 & \verb|nowait| Clause & Socket Affinity & Core Affinity & Thread Affinity & First-Touch \\
+		Case & n = 10,000,000 & \verb|nowait| Clause & Socket Affinity & Core Affinity & Thread Affinity & First-Touch with Core Affinity \\
 		\hline
 		Threads & \multicolumn{5}{c}{Elapsed Time (s)} \\
 		\hline
-		1 & 31.864 & 34.719 & 32.699 & 32.576 & 32.519 &  \\
-		2 & 19.537 & 20.881 & 16.389 & 19.830 & 19.830 &  \\
-		4 & 12.544 & 10.045 & 12.763 & 12.747 & 12.741 &  \\
-		8 & 10.520 & 10.826 & 10.681 & 10.773 & 10.753 &  \\
-		12 & 8.639 & 12.012 & 10.463 & 8.586 & 8.692 &  \\
-		16 & 8.621 & 9.021 & 8.904 & 8.884 & 10.090 & 
+		1 & 31.864 & 34.719 & 32.699 & 32.576 & 32.519 & 33.272 \\
+		2 & 19.537 & 20.881 & 16.389 & 19.830 & 19.830 & 20.088 \\
+		4 & 12.544 & 10.045 & 12.763 & 12.747 & 12.741 & 13.017 \\
+		8 & 10.520 & 10.826 & 10.681 & 10.773 & 10.753 & 11.005 \\
+		12 & 8.639 & 12.012 & 10.463 & 8.586 & 8.692 & 8.865 \\
+		16 & 8.621 & 9.021 & 8.904 & 8.884 & 10.090 & 9.131
 	\end{tabular}
 \end{table}
 
