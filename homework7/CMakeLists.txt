@@ -10,4 +10,5 @@ add_executable(HW7 HW7.c)
 include_directories(${MPI_INCLUDE_PATH}) # Addition specific to MacOS
 
 target_link_libraries(HW7 PUBLIC
-	OpenMP::OpenMP_C)
+	OpenMP::OpenMP_C
+	m)
