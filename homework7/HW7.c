@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 		// Thread b accesses
 		// Thread a updates
 		// Thread b updates
-#pragma omp parallel for reduction(+:error) schedule(dynamic, 1000)
+#pragma omp parallel for reduction(+:error)
 		for (long int i = 0; i < vectorsize; i++) {
 			error += pow(xvector[i] - solution[i], 2);
 		}
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 		// A[i, i] * (b[i] - sum(a[i, j] * x[j], j != i))
 		// Each iteration is independent
 		// nxb is locally defined
-#pragma omp parallel for schedule(dynamic, 1000)
+#pragma omp parallel for
 		for (long int i = 0; i < vectorsize; i++) {
 			// Start with b[i]
 			double nxb = rhs[i];
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 			tvector[i] = nxb / diag;
 		}
 		// Save to x
-#pragma omp parallel for schedule(dynamic, 1000)
+#pragma omp parallel for
 		for (long int i = 0; i < vectorsize; i++) {
 			xvector[i] = tvector[i];
 		}
