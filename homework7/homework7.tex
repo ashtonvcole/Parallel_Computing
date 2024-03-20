@@ -8,21 +8,10 @@
 \date{\today}
 
 \begin{document}
+
 \maketitle
 
-\section{Introduction}
-
-\section{Methodology}
-
-\subsection{Setup and Execution}
-
-\subsection{Jacobi Method}
-
-\subsection{Parallelization}
-
-\section{Results}
-
-\subsection{Exercise 8: Speedup Tests}
+\section{Exercise 8: Speedup Tests}
 
 \begin{table}[h!]
 	\centering
@@ -42,14 +31,14 @@
 	\end{tabular}
 \end{table}
 
-\subsection{Exercise 9: Performance Improvements}
+\section{Exercise 9: Performance Improvements}
 
 \begin{table}[h!]
 	\centering
 	\caption{The impact of performance improvements on a large problem size.}
 	\label{tbl:speedup}
 	\begin{tabular}{r|cccccc}
-		Case & n = 10,000,000 & \verb|nowait| Clause & Socket Affinity & Core Affinity & Thread Affinity & First-Touch with Core Affinity \\
+		Case & A & B & C & D & E & F \\
 		\hline
 		Threads & \multicolumn{5}{c}{Elapsed Time (s)} \\
 		\hline
@@ -62,9 +51,56 @@
 	\end{tabular}
 \end{table}
 
-\subsection{Exercise 10: Scheduling Improvements}
+\begin{itemize}
+	
+	\item A: Original program on Lonestar 6 at $n = 10,000,000$
+	\item 9 (a) No Wait
+	\begin{itemize}
+		\item B: Adding a \verb|nowait| clause between the calculation and assignment loops
+	\end{itemize}
+	\item 9 (b) Thread affinity
+	\begin{itemize}
+		\item C: Setting the affinity to \verb|sockets|
+		\item D: Setting the affinity to \verb|cores|
+		\item E: Setting the affinity to \verb|threads|
+	\end{itemize}
+	\item 9 (c) First-Touch
+	\begin{itemize}
+		\item F: Taking advantage of ``first-touch'' memory location by allocating in parallel, affinity set to \verb|cores|
+	\end{itemize}
+\end{itemize}
 
-\subsection{Exercise 11: Full Parallelization}
+Interestingly, none of the changes offer significant improvements over the original wallclock time.
+\begin{enumerate}
+	\item For the \verb|nowait| clause, it could be that, since the matrix is tridiagonal, each row takes about the same time to calculate a Jacobi iteration. Thus, none of the threads have to wait long before the others finish.
+	\item For the affinity, the issue might be that the program is run on a virtual machine, \verb|vm-small|, limited to 16 cores. The actual physical compute nodes may have more than 16 cores per socket, so restricting threads to a single socket makes no difference. However, it is unclear why the program takes the same time when all threads are bound to a single hyperthread.
+	\item Again, since the compute nodes of the virtual machine could fit on a single socket, the first-touch technique of allocating memory in parallel may not make a difference for latency, because it is already lower in the first place.
+\end{enumerate}
 
-\section{Conclusions}
+\section{Exercise 10: Scheduling Improvements}
+
+\begin{table}[h!]
+	\centering
+	\caption{The impact of performance improvements on a large problem size.}
+	\label{tbl:speedup}
+	\begin{tabular}{r|ccc}
+		Case & n = 10,000,000 & Static Scheduling & Dynamic Scheduling\footnote{A chunk size of 1,000 is used, because otherwise the scheduling overhead leaves the program running for an inordinate amount of time.} \\
+		\hline
+		Threads & \multicolumn{3}{c}{Elapsed Time (s)} \\
+		\hline
+		1 & 31.864 & 29.942 & 28.090 \\
+		2 & 19.537 & 15.238 & 27.450 \\
+		4 & 12.544 & 12.425 & 15.728 \\
+		8 & 10.520 & 8.400 & 12.460 \\
+		12 & 8.639 & 8.907 & 11.836 \\
+		16 & 8.621 & 8.623 & 11.916
+	\end{tabular}
+\end{table}
+
+Interestingly, static scheduling shows improvements for lower thread counts, although it is supposed to be the default. 
+
+\section{Exercise 11: Full Parallelization}
+
+An attempt was made to parallelize fully each iteration of the outer loop, using \verb|single| regions for serial operations. However, the compiler throws an error because the outer loop uses a break statement to terminate. Even though the parallel region is kept within a single iteration of the loop, the break statement is not something that OpenMP can handle in parallel. Note that the outer loop is not parallelizable like the ineer for loops, because iterations are sequentially dependedn on each other, and the loop is not static.
+
 \end{document}
