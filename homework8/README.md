@@ -1,6 +1,6 @@
 # Homework 8
 
-This assignment demonstrates parallelizing a recursive function algorithm using tasks. It calculates the $n$th item in the Fibonacci sequence. Admittedly, even with parallelization, recursion is not the fastest algorithm.
+This assignment demonstrates parallelizing a recursive function algorithm using tasks. It calculates the *n*th item in the Fibonacci sequence. Admittedly, even with parallelization, recursion is not the fastest algorithm.
 
 ## Setup and Execution
 

@@ -15,3 +15,4 @@ This repository contains assignments from COE 379L: Parallel Computing with Vict
 - [HW5](/homework5): A program conducting a [stencil operation](https://en.wikipedia.org/wiki/Iterative_Stencil_Loops) using the non-blocking send routines `MPI_Isend()` and `MPI_Irecv()`.
 - [HW6](/homework6): A program which distributes array elements amongst processors in an interleaved fashion.
 - [HW7](/homework7): A program which solves a linear system of equations using the Jacobi method.
+- [HW8](/homework8): A program which calculates the Fibonacci sequence recursively in parallel using OpenMP tasks.
