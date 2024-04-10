@@ -1,0 +1,89 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.1.1.217 Build 20200306
+
+Compiler options: -o HW10-i19-O1 -O1 -qopt-report=3 -fopenmp
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINING OPTION VALUES:
+  -inline-factor: 100
+  -inline-min-size: 30
+  -inline-max-size: 230
+  -inline-max-total-size: 2000
+  -inline-max-per-routine: 10000
+  -inline-max-per-compile: 500000
+
+
+Begin optimization report for: main(int, char **)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (main(int, char **)) [1] HW10.c(13,33)
+  -> EXTERN: (15,30) atoi(const char *)
+  -> EXTERN: (16,2) printf(const char *__restrict__, ...)
+  -> EXTERN: (22,13) omp_get_num_threads(void)
+  -> EXTERN: (24,29) malloc(size_t)
+  -> EXTERN: (25,30) malloc(size_t)
+  -> EXTERN: (28,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (33,14) rand(void)
+  -> EXTERN: (38,33) malloc(size_t)
+  -> EXTERN: (45,19) omp_get_wtime(void)
+  -> EXTERN: (52,21) omp_get_wtime(void)
+  -> EXTERN: (53,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (57,19) omp_get_wtime(void)
+  -> EXTERN: (64,21) omp_get_wtime(void)
+  -> EXTERN: (65,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (72,13) printf(const char *__restrict__, ...)
+  -> EXTERN: (74,2) free(void *)
+  -> EXTERN: (75,2) free(void *)
+  -> EXTERN: (76,2) free(void *)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at HW10.c(21,1)
+remark #16205: OpenMP multithreaded code generation for MASTER was successful
+OpenMP Construct at HW10.c(20,1)
+remark #16201: OpenMP DEFINED REGION WAS PARALLELIZED
+OpenMP Construct at HW10.c(59,1)
+remark #16201: OpenMP DEFINED REGION WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+remark #15320: routine skipped: loop optimizations disabled
+
+    Report from: Code generation optimizations [cg]
+
+HW10.c(13,33):remark #34051: REGISTER ALLOCATION : [main] HW10.c:13
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   14[ rax rdx rcx rbx rbp rsi rdi r8-r12 zmm0-zmm1]
+        
+    Routine temporaries
+        Total         :     270
+            Global    :      71
+            Local     :     199
+        Regenerable   :     107
+        Spilled       :       2
+        
+    Routine stack
+        Variables     :      96 bytes*
+            Reads     :      30 [1.36e+00 ~ 1.4%]
+            Writes    :      18 [7.92e+00 ~ 7.9%]
+        Spills        :      64 bytes*
+            Reads     :      26 [9.51e-03 ~ 0.0%]
+            Writes    :      20 [3.39e+00 ~ 3.4%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================

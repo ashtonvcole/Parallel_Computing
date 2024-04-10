@@ -1,0 +1,186 @@
+Global optimization report for : main
+
+LOOP BEGIN at HW10.c (32, 2)
+<Multiversioned v2>
+    remark #15527: Loop was not vectorized: function call to  cannot be vectorized
+LOOP END
+
+LOOP BEGIN at HW10.c (32, 2)
+<Multiversioned v1>
+    remark #25408: memset generated
+    remark #25562: The loop has been multiversioned for the small trip count
+    remark #15527: Loop was not vectorized: function call to  cannot be vectorized
+    remark #25439: Loop unrolled with remainder by 8
+LOOP END
+
+LOOP BEGIN at HW10.c (32, 2)
+<Remainder loop>
+LOOP END
+
+LOOP BEGIN at HW10.c (40, 2)
+    remark #15344: Loop was not vectorized: vector dependence prevents vectorization
+    remark #15346: vector dependence: assumed FLOW dependence between (41:43) and (41:43) 
+    remark #25439: Loop unrolled with remainder by 8
+LOOP END
+
+LOOP BEGIN at HW10.c (40, 2)
+<Remainder loop>
+    remark #25436: Loop completely unrolled by 3
+LOOP END
+
+LOOP BEGIN at HW10.c (47, 3)
+    remark #15553: loop was not vectorized: outer loop is not an auto-vectorization candidate.
+
+    LOOP BEGIN at HW10.c (48, 4)
+        remark #15300: LOOP WAS VECTORIZED
+        remark #15305: vectorization support: vector length 2
+        remark #15475: --- begin vector loop cost summary ---
+        remark #15476: scalar cost: 9.000000 
+        remark #15477: vector cost: 8.125000 
+        remark #15478: estimated potential speedup: 1.093750 
+        remark #15309: vectorization support: normalized vectorization overhead 0.234375
+        remark #15488: --- end vector loop cost summary ---
+        remark #15447: --- begin vector loop memory reference summary ---
+        remark #15450: unmasked unaligned unit stride loads: 2 
+        remark #15451: unmasked unaligned unit stride stores: 1 
+        remark #15474: --- end vector loop memory reference summary ---
+    LOOP END
+
+    LOOP BEGIN at HW10.c (48, 4)
+    <Remainder loop for vectorization>
+    LOOP END
+LOOP END
+
+LOOP BEGIN at HW10.c (58, 3)
+    remark #15344: Loop was not vectorized: vector dependence prevents vectorization
+    remark #15346: vector dependence: assumed FLOW dependence
+    remark #25439: Loop unrolled with remainder by 8
+LOOP END
+
+LOOP BEGIN at HW10.c (58, 3)
+<Remainder loop>
+LOOP END
+
+LOOP BEGIN at HW10.c (69, 2)
+    remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+    remark #25439: Loop unrolled with remainder by 8
+LOOP END
+
+LOOP BEGIN at HW10.c (69, 2)
+<Remainder loop>
+    remark #25585: Loop converted to switch
+LOOP END
+=================================================================
+
+Global optimization report for : main.omp_outlined
+=================================================================
+
+Global optimization report for : main.omp_outlined.3
+
+LOOP BEGIN at HW10.c (59, 1)
+<Multiversioned v2>
+    remark #15319: Loop was not vectorized: novector directive used
+LOOP END
+
+LOOP BEGIN at HW10.c (59, 1)
+<Multiversioned v1>
+    remark #25228: Loop multiversioned for Data Dependence
+    remark #25563: Load hoisted out of the loop
+    remark #15300: LOOP WAS VECTORIZED
+    remark #15305: vectorization support: vector length 2
+    remark #15475: --- begin vector loop cost summary ---
+    remark #15476: scalar cost: 10.000000 
+    remark #15477: vector cost: 8.625000 
+    remark #15478: estimated potential speedup: 1.156250 
+    remark #15309: vectorization support: normalized vectorization overhead 0.218750
+    remark #15488: --- end vector loop cost summary ---
+    remark #15447: --- begin vector loop memory reference summary ---
+    remark #15450: unmasked unaligned unit stride loads: 2 
+    remark #15451: unmasked unaligned unit stride stores: 1 
+    remark #15474: --- end vector loop memory reference summary ---
+LOOP END
+
+LOOP BEGIN at HW10.c (59, 1)
+<Remainder loop for vectorization>
+LOOP END
+=================================================================
+
+---- Begin Inlining Report ----
+Option Values:
+  inline-threshold: 225
+  inlinehint-threshold: 325
+  inlinecold-threshold: 45
+  inlineoptsize-threshold: 15
+
+DEAD STATIC FUNC: atoi
+
+DEAD STATIC FUNC: llvm.ssa.copy.i32
+
+DEAD STATIC FUNC: llvm.ssa.copy.i64
+
+COMPILE FUNC: main.omp_outlined.3
+   -> EXTERN: __kmpc_for_static_init_4 HW10.c (59,1)
+   -> llvm.smin.i32 HW10.c (60,9)
+   -> EXTERN: __kmpc_for_static_fini HW10.c (59,25)
+   -> DELETE: llvm.ssa.copy.i64 HW10.c (60,4)
+
+COMPILE FUNC: main
+   -> DELETE: __kmpc_fork_call HW10.c (59,1)
+   -> INLINE: atoi HW10.c (15,30) (10<=487)
+      -> EXTERN: strtol HW10.c (363,16)
+   -> EXTERN: printf HW10.c (16,2)
+   -> EXTERN: __kmpc_fork_call HW10.c (20,1)
+   -> EXTERN: malloc HW10.c (24,29)
+   -> EXTERN: malloc HW10.c (25,30)
+   -> EXTERN: puts HW10.c (28,3)
+   -> EXTERN: malloc HW10.c (38,33)
+   -> DELETE: rand HW10.c (33,14)
+   -> EXTERN: omp_get_wtime HW10.c (45,19)
+   -> EXTERN: omp_get_wtime HW10.c (52,21)
+   -> EXTERN: printf HW10.c (53,3)
+   -> EXTERN: omp_get_wtime HW10.c (57,19)
+   -> EXTERN: omp_get_wtime HW10.c (64,21)
+   -> EXTERN: printf HW10.c (65,3)
+   -> EXTERN: printf HW10.c (72,13)
+   -> EXTERN: free HW10.c (74,2)
+   -> EXTERN: free HW10.c (75,2)
+   -> EXTERN: free HW10.c (76,2)
+   -> DELETE: llvm.memset.p0.i64 HW10.c (34,3)
+   -> llvm.memset.p0.i64 HW10.c (34,3)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> DELETE: llvm.ssa.copy.i64 HW10.c (32,35)
+   -> DELETE: llvm.ssa.copy.i64 HW10.c (40,43)
+   -> DELETE: llvm.ssa.copy.i64 HW10.c
+   -> DELETE: llvm.ssa.copy.i64 HW10.c (47,44)
+   -> DELETE: llvm.ssa.copy.i64 HW10.c (48,37)
+   -> DELETE: llvm.ssa.copy.i32 HW10.c (58,44)
+   -> DELETE: llvm.ssa.copy.i64 HW10.c (69,35)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> llvm.vector.reduce.fadd.v8f64 HW10.c (70,5)
+
+COMPILE FUNC: main.omp_outlined
+   -> EXTERN: __kmpc_master HW10.c (21,1)
+   -> EXTERN: omp_get_num_threads HW10.c (22,13)
+   -> EXTERN: __kmpc_end_master HW10.c (22,2)
+
+---- End Inlining Report ------

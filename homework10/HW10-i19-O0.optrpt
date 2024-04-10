@@ -1,0 +1,16 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.1.1.217 Build 20200306
+
+Compiler options: -o HW10-i19-O0 -O0 -qopt-report=3 -fopenmp
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at HW10.c(21,1)
+remark #16205: OpenMP multithreaded code generation for MASTER was successful
+OpenMP Construct at HW10.c(20,1)
+remark #16201: OpenMP DEFINED REGION WAS PARALLELIZED
+OpenMP Construct at HW10.c(59,1)
+remark #16201: OpenMP DEFINED REGION WAS PARALLELIZED
