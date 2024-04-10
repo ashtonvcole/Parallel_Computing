@@ -1,0 +1,213 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 19.1.1.217 Build 20200306
+
+Compiler options: -o HW10-i19-O2 -O2 -qopt-report=3 -fopenmp
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINING OPTION VALUES:
+  -inline-factor: 100
+  -inline-min-size: 30
+  -inline-max-size: 230
+  -inline-max-total-size: 2000
+  -inline-max-per-routine: 10000
+  -inline-max-per-compile: 500000
+
+
+Begin optimization report for: main(int, char **)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (main(int, char **)) [1] HW10.c(13,33)
+  -> INLINE (MANUAL): (15,30) atoi(const char *)
+    -> EXTERN: /usr/include/stdlib.h:(363,16) strtol(const char *__restrict__, char **__restrict__, int)
+  -> EXTERN: (16,2) printf(const char *__restrict__, ...)
+  -> EXTERN: (22,13) omp_get_num_threads(void)
+  -> EXTERN: (24,29) malloc(size_t)
+  -> EXTERN: (25,30) malloc(size_t)
+  -> EXTERN: (28,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (33,14) rand(void)
+  -> EXTERN: (38,33) malloc(size_t)
+  -> EXTERN: (45,19) omp_get_wtime(void)
+  -> EXTERN: (52,21) omp_get_wtime(void)
+  -> EXTERN: (53,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (57,19) omp_get_wtime(void)
+  -> EXTERN: (64,21) omp_get_wtime(void)
+  -> EXTERN: (65,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (72,13) printf(const char *__restrict__, ...)
+  -> EXTERN: (74,2) free(void *)
+  -> EXTERN: (75,2) free(void *)
+  -> EXTERN: (76,2) free(void *)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at HW10.c(21,1)
+remark #16205: OpenMP multithreaded code generation for MASTER was successful
+OpenMP Construct at HW10.c(20,1)
+remark #16201: OpenMP DEFINED REGION WAS PARALLELIZED
+OpenMP Construct at HW10.c(59,1)
+remark #16201: OpenMP DEFINED REGION WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at HW10.c(32,2)
+   remark #15527: loop was not vectorized: function call to rand(void) cannot be vectorized   [ HW10.c(33,14) ]
+LOOP END
+
+LOOP BEGIN at HW10.c(40,2)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between loopcoeff[iloop] (41:3) and loopcoeff[iloop-1] (41:3)
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at HW10.c(40,2)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at HW10.c(48,4)
+   remark #25444: Loopnest Interchanged: ( 1 2 ) --> ( 2 1 )
+   remark #15542: loop was not vectorized: inner loop was already vectorized   [ HW10.c(48,4) ]
+
+   LOOP BEGIN at HW10.c(47,3)
+   <Peeled loop for vectorization>
+      remark #25015: Estimate of max trip count of loop=1
+   LOOP END
+
+   LOOP BEGIN at HW10.c(47,3)
+      remark #15301: PERMUTED LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 10 
+      remark #15477: vector cost: 4.000 
+      remark #15478: estimated potential speedup: 2.430 
+      remark #15488: --- end vector cost summary ---
+      remark #25015: Estimate of max trip count of loop=31
+   LOOP END
+
+   LOOP BEGIN at HW10.c(47,3)
+   <Remainder loop for vectorization>
+      remark #15301: REMAINDER LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15448: unmasked aligned unit stride loads: 1 
+      remark #15475: --- begin vector cost summary ---
+      remark #15476: scalar cost: 10 
+      remark #15477: vector cost: 4.000 
+      remark #15478: estimated potential speedup: 2.430 
+      remark #15488: --- end vector cost summary ---
+   LOOP END
+
+   LOOP BEGIN at HW10.c(47,3)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at HW10.c(69,2)
+<Peeled loop for vectorization>
+   remark #25015: Estimate of max trip count of loop=1
+LOOP END
+
+LOOP BEGIN at HW10.c(69,2)
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 6 
+   remark #15477: vector cost: 2.500 
+   remark #15478: estimated potential speedup: 2.260 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at HW10.c(69,2)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at HW10.c(59,1)
+<Peeled loop for vectorization>
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   remark #25015: Estimate of max trip count of loop=1
+LOOP END
+
+LOOP BEGIN at HW10.c(59,1)
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 2 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 10 
+   remark #15477: vector cost: 4.500 
+   remark #15478: estimated potential speedup: 2.150 
+   remark #15488: --- end vector cost summary ---
+LOOP END
+
+LOOP BEGIN at HW10.c(59,1)
+<Alternate Alignment Vectorized Loop>
+LOOP END
+
+LOOP BEGIN at HW10.c(59,1)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15442: entire loop may be executed in remainder
+   remark #15448: unmasked aligned unit stride loads: 2 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 10 
+   remark #15477: vector cost: 4.500 
+   remark #15478: estimated potential speedup: 2.150 
+   remark #15488: --- end vector cost summary ---
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at HW10.c(58,3)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form from OpenMP specification
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+HW10.c(13,33):remark #34051: REGISTER ALLOCATION : [main] HW10.c:13
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   30[ rax rdx rcx rbx rsi rdi r8-r15 zmm0-zmm15]
+        
+    Routine temporaries
+        Total         :     406
+            Global    :     124
+            Local     :     282
+        Regenerable   :     109
+        Spilled       :       3
+        
+    Routine stack
+        Variables     :      64 bytes*
+            Reads     :      19 [4.89e-03 ~ 0.0%]
+            Writes    :      14 [5.28e-02 ~ 0.1%]
+        Spills        :      64 bytes*
+            Reads     :      23 [2.23e-03 ~ 0.0%]
+            Writes    :      18 [2.88e-02 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: atoi(const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+NEVER EMIT DEFINITION FUNCTION: (atoi(const char *))/usr/include/stdlib.h(362,1)
+
+===========================================================================

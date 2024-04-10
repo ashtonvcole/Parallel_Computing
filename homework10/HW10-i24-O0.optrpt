@@ -1,0 +1,68 @@
+Global optimization report for : main
+
+LOOP BEGIN at HW10.c (32, 2)
+LOOP END
+
+LOOP BEGIN at HW10.c (40, 2)
+LOOP END
+
+LOOP BEGIN at HW10.c (47, 3)
+
+    LOOP BEGIN at HW10.c (48, 4)
+    LOOP END
+LOOP END
+
+LOOP BEGIN at HW10.c (58, 3)
+LOOP END
+
+LOOP BEGIN at HW10.c (69, 2)
+LOOP END
+=================================================================
+
+Global optimization report for : main.omp_outlined
+=================================================================
+
+Global optimization report for : main.omp_outlined.3
+
+LOOP BEGIN at HW10.c (59, 1)
+LOOP END
+=================================================================
+
+---- Begin Inlining Report ----
+Option Values:
+  inline-threshold: 225
+  inlinehint-threshold: 325
+  inlinecold-threshold: 45
+  inlineoptsize-threshold: 15
+
+COMPILE FUNC: main
+   -> EXTERN: atoi HW10.c (15,30)
+   -> EXTERN: printf HW10.c (16,2)
+   -> EXTERN: __kmpc_fork_call HW10.c (20,1)
+   -> EXTERN: malloc HW10.c (24,29)
+   -> EXTERN: malloc HW10.c (25,30)
+   -> EXTERN: printf HW10.c (28,3)
+   -> EXTERN: rand HW10.c (33,14)
+   -> EXTERN: malloc HW10.c (38,33)
+   -> EXTERN: omp_get_wtime HW10.c (45,19)
+   -> EXTERN: omp_get_wtime HW10.c (52,21)
+   -> EXTERN: printf HW10.c (53,3)
+   -> EXTERN: omp_get_wtime HW10.c (57,19)
+   -> EXTERN: __kmpc_fork_call HW10.c (59,1)
+   -> EXTERN: omp_get_wtime HW10.c (64,21)
+   -> EXTERN: printf HW10.c (65,3)
+   -> EXTERN: printf HW10.c (72,13)
+   -> EXTERN: free HW10.c (74,2)
+   -> EXTERN: free HW10.c (75,2)
+   -> EXTERN: free HW10.c (76,2)
+
+COMPILE FUNC: main.omp_outlined
+   -> EXTERN: __kmpc_master HW10.c (21,1)
+   -> EXTERN: omp_get_num_threads HW10.c (22,13)
+   -> EXTERN: __kmpc_end_master HW10.c (22,2)
+
+COMPILE FUNC: main.omp_outlined.3
+   -> EXTERN: __kmpc_for_static_init_4 HW10.c (59,1)
+   -> EXTERN: __kmpc_for_static_fini HW10.c (59,25)
+
+---- End Inlining Report ------
