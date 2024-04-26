@@ -1,5 +1,6 @@
 build/
 images/
+test/
 .DS_Store
 *.log
 *.aux
@@ -32,11 +33,6 @@ HW10-g11-O0
 HW10-g11-O1
 HW10-g11-O2
 HW10-g11-O3
-HW11
-HW12
-HW13
-HW14
-HW15
 CMakeCache.txt
 CMakeFiles/
 Makefile
