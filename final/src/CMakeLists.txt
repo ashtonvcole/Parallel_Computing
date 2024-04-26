@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 project(AcousticSimulation VERSION 1.0 LANGUAGES C)
 
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
+
 find_package(MPI REQUIRED)
 find_package(PETSc REQUIRED)
 
