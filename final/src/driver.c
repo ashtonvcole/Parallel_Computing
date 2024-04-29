@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 	sd.nx = 1001; // Number of solution nodes, boundary-inclusive
 	sd.ya = 0; // Bottom domain boundary
 	sd.yb = 1; // Top domain boundary
-	sd.ny = 101; // Number of solution nodes, boundary-inclusive
+	sd.ny = 11; // Number of solution nodes, boundary-inclusive
 	
 	struct TimeDomain td;
 	td.ta = 0; // Start time
@@ -58,8 +58,11 @@ int main(int argc, char **argv) {
 	bc.v_p_yb = v_p_yb;
 	
 	struct OutputParameters op;
-	op.name = "test";
-	op.write_every = 2;
+	op.name = "replicate_1d"; // Directory name
+	op.write_every = 10; // Write every _th time step
+	op.debug = 1; // Write matrices to file
+	op.write_single = 1; // Write one solution vector of all variables
+	op.write_split = 1; // Write one solution vector for each variable
 	
 	struct AcousticCase ac;
 	ac.sd = sd;
@@ -69,7 +72,7 @@ int main(int argc, char **argv) {
 	ac.bc = bc;
 	ac.op = op;
 	
-	solve_case(ac);
+	solve_case(argc, argv, ac);
 	
 	return 0;
 }

@@ -10,13 +10,13 @@ add_library(driver_functions driver_functions.c driver_functions.h)
 
 add_executable(acoustic_simulation driver.c)
 
-include_directories(${MPI_INCLUDE_PATH} ${PETSC_INCLUDES})
-add_definitions(${PETSC_DEFINITIONS})
+include_directories(${MPI_INCLUDE_PATH} ${PETSC_INC})
+# add_definitions(${PETSC_DEFINITIONS})
 
 add_subdirectory(lib)
 
 target_link_libraries(acoustic_simulation PUBLIC
 	${MPI_C_LIBRARIES}
-	${PETSC_LIBRARIES}
+	${PETSC_LIB}
 	driver_functions
 	acoustic_problem)

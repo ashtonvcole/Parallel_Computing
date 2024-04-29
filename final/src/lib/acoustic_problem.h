@@ -8,6 +8,11 @@
  * (C) 2024 Ashton Cole. All rights reserved.
  */
 
+#include <petsc.h>
+#include <petscmat.h>
+#include <petscvec.h>
+#include <petscviewer.h>
+
 struct SpaceDomain {
 	double xa; // Left domain boundary
 	double xb; // Right domain boundary
@@ -54,6 +59,9 @@ struct BoundaryConditions {
 struct OutputParameters {
 	char *name; // Directory name
 	int write_every; // Write every _th time step
+	int debug; // Write matrices to file
+	int write_single; // Write one solution vector of all variables
+	int write_split; // Write one solution vector for each variable
 };
 
 struct AcousticCase {
@@ -63,12 +71,12 @@ struct AcousticCase {
 	struct InitialConditions ic;
 	struct BoundaryConditions bc;
 	struct OutputParameters op;
-	// add maps ijk to e and vice-versa?
 };
 
-int solve_case(struct AcousticCase ac);
-int _build_matrix();
-int _build_rhs();
-int _solve_matrix_system();
-int _write_metadata(struct AcousticCase ac);
-int _write_step(struct AcousticCase ac, int n);
+int solve_case(int argc, char **argv, struct AcousticCase ac);
+PetscErrorCode _build_matrix(MPI_Comm comm, struct AcousticCase ac, Mat *A);
+PetscErrorCode _build_rhs(MPI_Comm comm, struct AcousticCase ac, Vec *rb);
+PetscErrorCode _build_z0(MPI_Comm comm, struct AcousticCase ac, Vec *rz);
+PetscErrorCode _apply_dbc(MPI_Comm comm, struct AcousticCase ac, Vec z, double t);
+PetscErrorCode _write_metadata(struct AcousticCase ac);
+PetscErrorCode _write_step(MPI_Comm comm, struct AcousticCase ac, Vec zn, int n, double t);
