@@ -14,10 +14,21 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
-	printf("Linear Acoustic Perturbation Solver\n");
-	printf("Final Project for Parallel Computing Class\n");
-	printf("(C) 2024 Ashton Cole. All rights reserved.\n");
-	printf("\nStarting driver script...\n");
+	PetscFunctionBegin;
+	
+	// Initialize PETSc/MPI
+	MPI_Comm comm;
+	PetscMPIInt procno, nprocs;
+
+	PetscInitialize(&argc, &argv, 0, "");
+	comm = PETSC_COMM_WORLD;
+	PetscCall(MPI_Comm_rank(comm, &procno));
+	PetscCall(MPI_Comm_size(comm, &nprocs));
+	
+	PetscCall(PetscPrintf(comm, "Linear Acoustic Perturbation Solver\n"));
+	PetscCall(PetscPrintf(comm, "Final Project for Parallel Computing Class\n"));
+	PetscCall(PetscPrintf(comm, "(C) 2024 Ashton Cole. All rights reserved.\n"));
+	PetscCall(PetscPrintf(comm, "\nStarting driver script...\n"));
 	
 	struct SpaceDomain sd;
 	sd.xa = 0; // Left domain boundary
@@ -60,9 +71,9 @@ int main(int argc, char **argv) {
 	struct OutputParameters op;
 	op.name = "replicate_1d"; // Directory name
 	op.write_every = 10; // Write every _th time step
-	op.debug = 1; // Write matrices to file
+	op.debug = 0; // Write matrices to file
 	op.write_single = 1; // Write one solution vector of all variables
-	op.write_split = 1; // Write one solution vector for each variable
+	op.write_split = 0; // Write one solution vector for each variable
 	
 	struct AcousticCase ac;
 	ac.sd = sd;
@@ -71,8 +82,19 @@ int main(int argc, char **argv) {
 	ac.ic = ic;
 	ac.bc = bc;
 	ac.op = op;
+
+	PetscCall(PetscPrintf(comm, "\nStarting case solution with %d processes...\n", nprocs));
 	
-	solve_case(argc, argv, ac);
+	if (ac.op.debug) {
+		PetscCall(PetscPrintf(comm, "\n\tRoll call...\n"));
+		PetscCall(PetscSynchronizedPrintf(comm, "\t\tProcess %d is present\n", procno));
+		PetscCall(PetscSynchronizedFlush(comm, stdout));
+		PetscCall(PetscBarrier(PETSC_NULLPTR));
+	}
+	
+	PetscCall(solve_case(comm, procno, nprocs, ac));
+
+	PetscFinalize();
 	
 	return 0;
 }

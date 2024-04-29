@@ -73,10 +73,10 @@ struct AcousticCase {
 	struct OutputParameters op;
 };
 
-int solve_case(int argc, char **argv, struct AcousticCase ac);
-PetscErrorCode _build_matrix(MPI_Comm comm, struct AcousticCase ac, Mat *A);
-PetscErrorCode _build_rhs(MPI_Comm comm, struct AcousticCase ac, Vec *rb);
-PetscErrorCode _build_z0(MPI_Comm comm, struct AcousticCase ac, Vec *rz);
-PetscErrorCode _apply_dbc(MPI_Comm comm, struct AcousticCase ac, Vec z, double t);
+PetscErrorCode solve_case(MPI_Comm comm, PetscMPIInt procno, PetscMPIInt nprocs, struct AcousticCase ac);
+PetscErrorCode _build_matrix(MPI_Comm comm, PetscMPIInt procno, PetscMPIInt nprocs, struct AcousticCase ac, Mat *A);
+PetscErrorCode _build_rhs(MPI_Comm comm, PetscMPIInt procno, PetscMPIInt nprocs, struct AcousticCase ac, Vec *rb);
+PetscErrorCode _build_z0(MPI_Comm comm, PetscMPIInt procno, PetscMPIInt nprocs, struct AcousticCase ac, Vec *rz);
+PetscErrorCode _apply_dbc(MPI_Comm comm, PetscMPIInt procno, PetscMPIInt nprocs, struct AcousticCase ac, Vec z, double t);
 PetscErrorCode _write_metadata(struct AcousticCase ac);
-PetscErrorCode _write_step(MPI_Comm comm, struct AcousticCase ac, Vec zn, int n, double t);
+PetscErrorCode _write_step(MPI_Comm comm, PetscMPIInt procno, PetscMPIInt nprocs, struct AcousticCase ac, Vec zn, int n, double t);
