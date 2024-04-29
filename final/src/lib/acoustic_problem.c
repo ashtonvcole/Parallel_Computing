@@ -44,9 +44,9 @@ int solve_case(int argc, char **argv, struct AcousticCase ac) {
 	Mat A;
 	Vec b, zn, znm1, znm2, prov;
 	
-    PetscFunctionBegin;
-    PetscInitialize(&argc, &argv, 0, "");
-    comm = MPI_COMM_WORLD;
+	PetscFunctionBegin;
+	PetscInitialize(&argc, &argv, 0, "");
+	comm = MPI_COMM_WORLD;
 	
 	// Build matrix
 	PetscCall(_build_matrix(comm, ac, &A));
@@ -83,16 +83,16 @@ int solve_case(int argc, char **argv, struct AcousticCase ac) {
 	}
 	
 	// znm1 and znm2 (empty vectors)
-    PetscInt vec_size = ac.sd.nx * ac.sd.ny * 3;
-    PetscCall(VecCreate(comm, &znm1));
-    PetscCall(VecSetType(znm1, VECSTANDARD)); // Or VECMPI
-    PetscCall(VecSetSizes(znm1, PETSC_DECIDE, vec_size));
-    PetscCall(VecCreate(comm, &znm2));
-    PetscCall(VecSetType(znm2, VECSTANDARD)); // Or VECMPI
-    PetscCall(VecSetSizes(znm2, PETSC_DECIDE, vec_size));
-    PetscCall(VecCreate(comm, &prov));
-    PetscCall(VecSetType(prov, VECSTANDARD)); // Or VECMPI
-    PetscCall(VecSetSizes(prov, PETSC_DECIDE, vec_size));
+	PetscInt vec_size = ac.sd.nx * ac.sd.ny * 3;
+	PetscCall(VecCreate(comm, &znm1));
+	PetscCall(VecSetType(znm1, VECSTANDARD)); // Or VECMPI
+	PetscCall(VecSetSizes(znm1, PETSC_DECIDE, vec_size));
+	PetscCall(VecCreate(comm, &znm2));
+	PetscCall(VecSetType(znm2, VECSTANDARD)); // Or VECMPI
+	PetscCall(VecSetSizes(znm2, PETSC_DECIDE, vec_size));
+	PetscCall(VecCreate(comm, &prov));
+	PetscCall(VecSetType(prov, VECSTANDARD)); // Or VECMPI
+	PetscCall(VecSetSizes(prov, PETSC_DECIDE, vec_size));
 	
 	// Starting time loop
 	printf("\nStarting time loop...\n");
@@ -192,18 +192,18 @@ int solve_case(int argc, char **argv, struct AcousticCase ac) {
 			PetscCall(_write_step(comm, ac, zn, n, t));
 		}
 	}
-	
+
 	free(dir);
 	free(path);
-	
-    PetscCall(MatDestroy(&A));
-    PetscCall(VecDestroy(&b));
-    PetscCall(VecDestroy(&zn));
-    PetscCall(VecDestroy(&znm1));
-    PetscCall(VecDestroy(&znm2));
-  
-    PetscFinalize();
-	
+
+	PetscCall(MatDestroy(&A));
+	PetscCall(VecDestroy(&b));
+	PetscCall(VecDestroy(&zn));
+	PetscCall(VecDestroy(&znm1));
+	PetscCall(VecDestroy(&znm2));
+
+	PetscFinalize();
+
 	printf("\nCase complete.\n");
 	
 	return 0;
@@ -213,14 +213,14 @@ PetscErrorCode _build_matrix(MPI_Comm comm, struct AcousticCase ac, Mat *rA) {
 	// Note here that Mat *rA is a pointer
 	PetscFunctionBegin;
 	printf("\t\tAssembling \"A\" matrix...\n");
-	
+
 	// Basic matrix creation
 	Mat A;
-    PetscCall(MatCreate(comm, &A));
-    PetscCall(MatSetType(A, MATAIJ)); // Or MATMPIAIJ
-    PetscInt matrix_size = ac.sd.nx * ac.sd.ny * 3;
-    PetscCall(MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, matrix_size, matrix_size));
-	
+	PetscCall(MatCreate(comm, &A));
+	PetscCall(MatSetType(A, MATAIJ)); // Or MATMPIAIJ
+	PetscInt matrix_size = ac.sd.nx * ac.sd.ny * 3;
+	PetscCall(MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, matrix_size, matrix_size));
+
 	// Loop through domain, bc, and set values by adding
 	PetscInt i, j, eqn, var;
 	PetscScalar v, x, y;
@@ -389,14 +389,14 @@ PetscErrorCode _build_rhs(MPI_Comm comm, struct AcousticCase ac, Vec *rb) {
 	// Note here that *rb is a pointer
 	PetscFunctionBegin;
 	printf("\t\tAssembling \"b\" vector...\n");
-	
+
 	// Basic matrix creation
 	Vec b;
-    PetscCall(VecCreate(comm, &b));
-    PetscCall(VecSetType(b, VECSTANDARD)); // Or VECMPI
-    PetscInt vec_size = ac.sd.nx * ac.sd.ny * 3;
-    PetscCall(VecSetSizes(b, PETSC_DECIDE, vec_size));
-	
+	PetscCall(VecCreate(comm, &b));
+	PetscCall(VecSetType(b, VECSTANDARD)); // Or VECMPI
+	PetscInt vec_size = ac.sd.nx * ac.sd.ny * 3;
+	PetscCall(VecSetSizes(b, PETSC_DECIDE, vec_size));
+
 	// Loop through domain, bc, and set values by adding
 	PetscInt i, j, eqn;
 	PetscScalar v, x, y;
@@ -470,14 +470,14 @@ PetscErrorCode _build_z0(MPI_Comm comm, struct AcousticCase ac, Vec *rz) {
 	// Note here that *rb is a pointer
 	PetscFunctionBegin;
 	printf("\t\tAssembling \"z0\" vector...\n");
-	
+
 	// Basic matrix creation
 	Vec z;
-    PetscCall(VecCreate(comm, &z));
-    PetscCall(VecSetType(z, VECSTANDARD)); // Or VECMPI
-    PetscInt vec_size = ac.sd.nx * ac.sd.ny * 3;
-    PetscCall(VecSetSizes(z, PETSC_DECIDE, vec_size));
-	
+	PetscCall(VecCreate(comm, &z));
+	PetscCall(VecSetType(z, VECSTANDARD)); // Or VECMPI
+	PetscInt vec_size = ac.sd.nx * ac.sd.ny * 3;
+	PetscCall(VecSetSizes(z, PETSC_DECIDE, vec_size));
+
 	// Loop through domain, bc, and set values by adding
 	PetscInt i, j, eqn;
 	PetscScalar v, x, y;
