@@ -26,7 +26,7 @@ In addition, we also wanted to model this effect computationally. First, we trie
 
 Although we were not able to complete a Python-based finite element method solver during our project timeline, we were able to write a serial finite difference solver for the system of equations in one dimension, which proved that they work. I also decided to take on this same problem for this class' final project. Solving a system of partial differential equations is an ideal candidate for parallel programming, since the simulations require large matrix-vector computations. In addition, the PETSc library provides a convenient interface for parallel linear algebra operations in C. Instead of the finite element method, I again opted for a simpler finite difference method solver, but now on a two-dimensional structured grid. The program solves the equations in time explicitly and writes them to files within a case directory.
 
-Unfortunately, the results were not particularly satisfying. In two dimensions, it seems that the solution very easily becomes unstable. However, speedup tests were at least able to show that the parallelization through PETSc offers an advantage for large systems.
+Unfortunately, the results were not particularly satisfying. In two dimensions, it seems that the solution very easily becomes unstable. However, speedup tests were at least able to show that the parallelization through PETSc offers some advantage for large systems.
 
 \subsection{Setup and Execution}
 
@@ -183,6 +183,8 @@ The second case was re-executed at different levels of refinement, with differen
 
 Unfortunately, this two-dimensional solver did not provide the satisfying results that were hoped for. The matrix assembly code and matrix itself were inspected carefully to ensure that they were built as expected. The oscillations suggest that the issue is one of numerical stability. It is possible that additional refinements with even smaller time steps will yield stable solutions, or the system may need to be solved with a different, perhaps implicit, method.
 
-However, at least some insights may be gleaned from the parallelization tests. At around $n_{x} = n_{y} = 303$, speedup advantage from parallel operations starts to appear. However, the biggest impact is from disabling file writing. This is because, when writing to file, the vector must be ordered correctly. Each process must write the vector in sequence, bringing the execution time back to the level of a sequential program.
+However, at least some insights may be gleaned from the parallelization tests. At around $n_{x} = n_{y} = 303$, speedup advantage from parallel operations starts to appear. However, the biggest impact is from disabling file writing. This is because, when writing to file, the vector must be ordered correctly. Each process must write the vector in the correct sequence, bringing the execution time back to the level of a sequential program.
+
+Nevertheless, even without file writing, the speedup is far from inversely proportional to the number of processors. The advantage actually seems to level off between 4 and 8 processors. This could be due to the sequential loops which create $\vb{A}$ and $\vb{b}$, but another possibility is messgage passing during the matrix-vector operations. Because the grid is two-dimensional, the stencil of finite differences for a given entry of $\vb{z}$ include entries that, even though they are off-index by only one unit of $i$, are around $3 n_{y}$ spaces away from each other. This makes them likely to be stored on separate processes, entailing message passing latency for each calculation of $\vb{A} \vb{z}$.
 
 \end{document}
