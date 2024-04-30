@@ -68,36 +68,55 @@ After substitutions, expansions, and neglecting small terms, the following linea
 
 \subsection{Problem Definition}
 
-The problem is to solve the above system of equations in two dimensions over a rectangular domain $\Omega = [x_{a}, x_{b}] \cross [y_{a}, y_{b}]$ from time $t_{a}$ to time $t_{b}$. The solution has an initial state $\rho'(\vb{x}, t_{a}) = \rho'_{0}(\vb{x})$ and $\vb{u}`(\vb{x}, t_{a}) = \vb{u}'_{0}(\vb{x})$. Each of the four boundaries has Dirichlet conditions imposed on $\rho'$ and $\vb{u}'$, which are permitted to be functions of both space and time. Finally, the incompressible flow field solutions $\overline{\rho}$ and $\overline{\vb{u}}$ are prescribed.
+The problem is to solve the above system of equations in two dimensions over a rectangular domain $\Omega = [x_{a}, x_{b}] \cross [y_{a}, y_{b}]$ from time $t_{a}$ to time $t_{b}$. The solution has an initial state $\rho'(\vb{x}, t_{a}) = \rho'_{0}(\vb{x})$ and $\vb{u}'(\vb{x}, t_{a}) = \vb{u}'_{0}(\vb{x})$. Each of the four boundaries has Dirichlet conditions imposed on $\rho'$ and $\vb{u}'$, which are permitted to be functions of both space and time. Finally, the incompressible flow field solutions $\overline{\rho}$ and $\overline{\vb{u}}$ are prescribed.
 
 \subsection{Discrete Formulation}
 
-The solution is solved discretely at regularly-spaced grid points $(x_{i}, y_{j})$. The solution variable values at these points are combined into a single vector $\vb{z} = (\rho'_{0, 0}, u'_{0, 0}, v'_{0, 0}, \rho'_{0, 1}, u'_{0, 1}, v'_{0, 1}, \dots)$, with an indexing method $e = 3 n_{y} i + 3j + k$, where $k$ is the variable index. This discretization allows the system of partial differential equations, deploying second-order-accurate central finite differences, to be approximately rewritten as a system of ordinary differential equations. The exception is at the boundary nodes, but these equations will be adjusted later.
+The solution is solved discretely at rectilinear, regularly-spaced grid points $(x_{i}, y_{j})$. The solution variable values at these points are combined into a single vector $\vb{z} = (\rho'_{0, 0}, u'_{0, 0}, v'_{0, 0}, \rho'_{0, 1}, u'_{0, 1}, v'_{0, 1}, \dots)$, with an indexing method $e = 3 n_{y} i + 3j + k$, where $k$ is the variable index and $n_{y}$ is the number of solution points along the $y$-direction. This discretization allows the system of partial differential equations, deploying second-order-accurate central finite differences, to be approximately rewritten as a system of ordinary differential equations (Equation \ref{eqn:ode}). The exception is at the boundary nodes, but these equations will be adjusted later.
 
 \begin{align}
-	\dv{\vb{z}}{t} &= \vb{A} \vb{z} + \vb{b}
+	\dv{\vb{z}}{t} &= \vb{A} \vb{z} + \vb{b} \label{eqn:ode}
 \end{align}
 
-Then, central finite differences are again used to approximate the time derivative. This allows for an explicit equation for $\vb{z}$ at the next time step $n$.
+Then, central finite differences are again used to approximate the time derivative. This allows for an explicit definition for $\vb{z}$ at the next time step $n$ (Equation \ref{eqn:leap}).
 
 \begin{align}
 	\frac{\vb{z}^{n} - \vb{z}^{n - 2}}{\Delta t} &= \vb{A} \vb{z}^{n - 1} + \vb{b} \\
-	\vb{z}^{n} &= \vb{z}^{n - 2} + \Delta t (\vb{A} \vb{z}^{n - 1} + \vb{b})
+	\vb{z}^{n} &= \vb{z}^{n - 2} + \Delta t (\vb{A} \vb{z}^{n - 1} + \vb{b}) \label{eqn:leap}
 \end{align}
 
 Because this method requires two solution steps to calculate, the first new step is calculated with the forward Euler method.
 
 \subsection{Implementation with PETSc}
 
-brief on petsc implementatoin
+The Portable, Extensible Toolkit for Scientific Computation (PETSc) library is used to conduct all necessary matrix-vector operations in C. As an added benefit, it supports computations in parallel, being built on top of the Message-Passing Interface (MPI) standard. Thus, this solver supports vectors, matrices, and calculations spread out across multiple concurrently-operating processors, expediting the solution of large problems.
 
-brief on interpreting output
+\subsection{Output}
+
+The main program outputs the results to a case directory. Within this directory, simulation parameters are written to a JSON metatdata file, while the time and solution vector are written to time step subdirectories. Visualizations are generated using a Python postprocessing script.
 
 \section{Results}
 
-plots and observations
+Both visual inspection of the results and parallel speedup tests are used to evaluate the program.
 
-performance tests
+\subsection{Visualizations}
+
+\subsection{Performance tests}
+
+\begin{table}
+	\centering
+	\caption{Performance tests for a simple case.}
+	\label{tbl:perftests}
+	\begin{tabular}{c|ccc}
+		Number of Processes & \multicolumn{3}{ccc}{Number of Horizontal Grid Points $n_{x}$} \\
+		 & 1,001 & 10,001 & 100,001
+		\hline
+		1 &  &  &  \\
+		2 &  &  &  \\
+		4 &  &  &  \\
+		8 &  &  &  \\
+	\end{tabular}
+\end{table}
 
 \section{Conclusions}
 
