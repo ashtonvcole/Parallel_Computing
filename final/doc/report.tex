@@ -8,8 +8,8 @@
 }
 \lstset{style=mystyle}
 
-\title{Linear Acoustic Perturbation Solver}
-\author{Ashton Cole}
+\title{A Linear Acoustic Perturbation Solver Using PETSc}
+\author{Ashton Cole\\AVC687}
 \date{\today}
 
 \begin{document}
@@ -18,15 +18,76 @@
 
 \section{Introduction}
 
-brief on what it is
+This parallel computing final project implements a two-dimensional finite difference solver, which attempts to model the propagation of acoustic perturbations across a steady, approximately-incompressible flow. The solver is written in C, leveraging the PETSc linear algebra library.
 
-brief on setup and execution
+The problem is inspired by my senior design project. In it, we were primarily tasked with physically testing an ultrasonic fluid flow rate sensor. The sensor operates with using transducers positioned at the sides of a pipe, with one upstream of the other. As they send signals back and forth, the waves move at the speed of sound relative to the flowing fluid medium. Because of this, the downstream signal travels faster than the upstream one, resulting in a measurable transit time difference, which can be used to infer the average fluid velocity.
+
+In addition, we also wanted to model this effect computationally. First, we tried compressible flow simulations in OpenFOAM. However, when we tried adding viscosity, the solution became unstable. We reached out to Dr. Fabrizio Bisetti, a professor specializing in Computational Fluid Dynamics, and he suggested we try deriving our own linear system of partial differential equations to solve. This would be simpler, and hopefully easier, to solve than the Navier-Stokes equations.
+
+Although we were not able to complete a Python-based finite element method solver during our project timeline, I also decided to take on this same problem from a different angle for this class' final project. Solving a system of partial differential equations is an ideal candidate for parallel programming, since the simulations require large matrix-vector computations. In addition, the PETSc library provides a convenient interface for parallel linear algebra operations in C. Instead of the finite element method, I opted for a simpler finite difference method solver on a two-dimensional structured grid. The program solves the equations in time explicitly and writes them to files within a case directory.
+
+\subsection{Setup and Execution}
+
+In addition to a standard C compiler, this project requires an installation of PETSc, and by extension an implementation of MPI. Importantly, the \verb|$PETSC_DIR| and \verb|$PETSC_ARCH| environment variables should be set to the PETSc intallation location and build subdirectory, respectively.
+
+To set up a particular case, constant values are defined in \verb|driver.c|, while functions are defined in \verb|driver_functions.c|. Once these are configured appropriately, the program may be built with CMake. This program may then either be executed in serial or parallel, using appropriate terminal commands. The case output directory will be written on a path relative to the present working directory.
 
 \section{Methodology}
 
-brief on logic behind derivation of equations (acknowledge dr b)
+In this section, the derivation and discretization of the system of partial differential equations are discussed, as well as the implementation of the solver in C.
 
-brief on finite differences used, deriving matrix equations
+\subsection{Derivation of Partial Differential Equations}
+
+After extended discussion with Dr. Bisetti, we decided to take the rather ambitious and exploratory route of deriving our own equations to solve. He presented the following idea, based on an acoustics textbook: start with the Euler equations, i.e. the inviscid, but compressible form of the Navier-Stokes equations (Equations \ref{eqn:com} and \ref{eqn:cop}). Assume that the velocity and density are the sum of a steady, compressible, viscous flow, and far smaller unsteady acoustic fluctuations. An isentropic pressure relation (Equation \ref{eqn:isen}) replaces the energy equation. This essentially means that we want to neglect nonlinear effects and dissapation over long distances, focusing on the transit time difference. Finally, the fluid is assumed to be an ideal gas. This is not representative of liquids like what our sensor would actually measure, but it was convenient to introduce the speed of sound into the system (Equation \ref{eqn:sos}). If anything, it would be just be a good place to start, and hopefully yield some meaningful results.
+
+\begin{align}
+	\pdv{\rho}{t} + \div{(\rho \vb{u})} &= 0 \label{eqn:com} \\
+	\pdv{(\rho \vb{u})}{t} + \div{(\rho \vb{u} \otimes \vb{u})} &= - \grad{p} \label{eqn:cop} \\
+	p &= C \rho^{\gamma} \label{eqn:isen} \\
+	c &= \sqrt{\gamma \frac{p}{\rho}} \label{eqn:sos}
+\end{align}
+
+The following variable conventions are used for the above equations.
+
+\begin{itemize}
+	\item $\vb{x}$: position vector
+	\item $t$: time
+	\item $\rho(\vb{x}, t) = \overline{\rho} + \rho'(\vb{x}, t)$: density scalar field of the fluid, decomposed into a known constant $\overline{\rho}$ and a small acoustic perturbation $\rho'$, i.e. $\overline{\rho} \gg \rho'$
+	\item $\vb{u}(\vb{x}, t) = \overline{\vb{u}}(\vb{x}) + \vb{u}'(\vb{x}, t)$: velocity vector field of the fluid, decomposed into a known steady $\overline{\vb{u}}$ and a small acoustic perturbation $\vb{u}'$, i.e. $\overline{\vb{u}} \gg \vb{u}'$
+	\item $p(\vb{x}, t)$: pressure scalar field of the fluid, not decomposed for this derivation
+	\item $\gamma$: ratio of specific heats of the fluid
+	\item $c$: the ideal-gas speed of sound of the fluid
+\end{itemize}
+
+After substitutions, expansions, and neglecting small terms, the following linear, hyperbolic system of partial differential equations results (Equations \ref{eqn:rhop} and \ref{eqn:up}).
+
+\begin{align}
+	\pdv{\rho'}{t} + \overline{\rho} \div{\vb{u}'} + \overline{\vb{u}} \vdot \grad{\rho'} &= 0 \label{eqn:rhop} \\
+	\pdv{\vb{u}'}{t} + \overline{\vb{u}} \vdot \grad{\vb{u}'} + \frac{c^{2}}{\overline{\rho}} \grad{\rho'} &= - \overline{\vb{u}} \vdot \grad{\overline{\vb{u}}} \label{eqn:up}
+\end{align}
+
+\subsection{Problem Definition}
+
+The problem is to solve the above system of equations in two dimensions over a rectangular domain $\Omega = [x_{a}, x_{b}] \cross [y_{a}, y_{b}]$ from time $t_{a}$ to time $t_{b}$. The solution has an initial state $\rho'(\vb{x}, t_{a}) = \rho'_{0}(\vb{x})$ and $\vb{u}`(\vb{x}, t_{a}) = \vb{u}'_{0}(\vb{x})$. Each of the four boundaries has Dirichlet conditions imposed on $\rho'$ and $\vb{u}'$, which are permitted to be functions of both space and time. Finally, the incompressible flow field solutions $\overline{\rho}$ and $\overline{\vb{u}}$ are prescribed.
+
+\subsection{Discrete Formulation}
+
+The solution is solved discretely at regularly-spaced grid points $(x_{i}, y_{j})$. The solution variable values at these points are combined into a single vector $\vb{z} = (\rho'_{0, 0}, u'_{0, 0}, v'_{0, 0}, \rho'_{0, 1}, u'_{0, 1}, v'_{0, 1}, \dots)$, with an indexing method $e = 3 n_{y} i + 3j + k$, where $k$ is the variable index. This discretization allows the system of partial differential equations, deploying second-order-accurate central finite differences, to be approximately rewritten as a system of ordinary differential equations. The exception is at the boundary nodes, but these equations will be adjusted later.
+
+\begin{align}
+	\dv{\vb{z}}{t} &= \vb{A} \vb{z} + \vb{b}
+\end{align}
+
+Then, central finite differences are again used to approximate the time derivative. This allows for an explicit equation for $\vb{z}$ at the next time step $n$.
+
+\begin{align}
+	\frac{\vb{z}^{n} - \vb{z}^{n - 2}}{\Delta t} &= \vb{A} \vb{z}^{n - 1} + \vb{b} \\
+	\vb{z}^{n} &= \vb{z}^{n - 2} + \Delta t (\vb{A} \vb{z}^{n - 1} + \vb{b})
+\end{align}
+
+Because this method requires two solution steps to calculate, the first new step is calculated with the forward Euler method.
+
+\subsection{Implementation with PETSc}
 
 brief on petsc implementatoin
 
@@ -36,8 +97,12 @@ brief on interpreting output
 
 plots and observations
 
+performance tests
+
 \section{Conclusions}
 
 issue with boundary conditions/method
+
+limitations of derivation
 
 \end{document}
