@@ -24,7 +24,9 @@ The problem is inspired by my senior design project. In it, we were primarily ta
 
 In addition, we also wanted to model this effect computationally. First, we tried compressible flow simulations in OpenFOAM. However, when we tried adding viscosity, the solution became unstable. We reached out to Dr. Fabrizio Bisetti, a professor specializing in Computational Fluid Dynamics, and he suggested we try deriving our own linear system of partial differential equations to solve. This would be simpler, and hopefully easier, to solve than the Navier-Stokes equations.
 
-Although we were not able to complete a Python-based finite element method solver during our project timeline, I also decided to take on this same problem from a different angle for this class' final project. Solving a system of partial differential equations is an ideal candidate for parallel programming, since the simulations require large matrix-vector computations. In addition, the PETSc library provides a convenient interface for parallel linear algebra operations in C. Instead of the finite element method, I opted for a simpler finite difference method solver on a two-dimensional structured grid. The program solves the equations in time explicitly and writes them to files within a case directory.
+Although we were not able to complete a Python-based finite element method solver during our project timeline, we were able to write a serial finite difference solver for the system of equations in one dimension, which proved that they work. I also decided to take on this same problem for this class' final project. Solving a system of partial differential equations is an ideal candidate for parallel programming, since the simulations require large matrix-vector computations. In addition, the PETSc library provides a convenient interface for parallel linear algebra operations in C. Instead of the finite element method, I again opted for a simpler finite difference method solver, but now on a two-dimensional structured grid. The program solves the equations in time explicitly and writes them to files within a case directory.
+
+Unfortunately, the results were not particularly satisfying. In two dimensions, it seems that the solution very easily becomes unstable. However, speedup tests were at least able to show that the parallelization through PETSc offers an advantage for large systems.
 
 \subsection{Setup and Execution}
 
@@ -91,6 +93,28 @@ Because this method requires two solution steps to calculate, the first new step
 
 The Portable, Extensible Toolkit for Scientific Computation (PETSc) library is used to conduct all necessary matrix-vector operations in C. As an added benefit, it supports computations in parallel, being built on top of the Message-Passing Interface (MPI) standard. Thus, this solver supports vectors, matrices, and calculations spread out across multiple concurrently-operating processors, expediting the solution of large problems.
 
+The whole program uses the SPMD model characteristic of MPI parallelization, with each processor executes the same instructions. Some commands, like printing to the terminal or looping for vector and matrix value assignment, are only executed in serial on the lowest-rank processor.
+
+It is worth noting that the inter-processor communication routines for vector-matrix operations are hidden under the PETSc interface. For example, consider the following snippet of code from \verb|_build_matrix()| in \verb|acoustic_problem.c| showing specifically the sequence of commands used to assemble the $\vb{A}$ matrix.
+
+\begin{lstlisting}[language=C]
+Mat A;
+PetscCall(MatCreate(comm, &A));
+PetscCall(MatSetType(A, MATAIJ)); // Or MATMPIAIJ
+PetscInt matrix_size = ac.sd.nx * ac.sd.ny * 3;
+PetscCall(MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, matrix_size, matrix_size));
+
+// Loop through domain, bc, and set values by adding
+if (procno == 0) {
+	// Call MatSetValues()
+}
+
+PetscCall(MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY));
+PetscCall(MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY));
+\end{lstlisting}
+
+Essentially, sections of the matrix are allocated on each process, but all of the values are set on the 0-rank process. These have to be distributed appropriately using message passing. The assembly begin and end functions clearly mirror how, in MPI, sending and receiving have to be coordinated with \verb|MPI_isend()| and \verb|MPI_irecv()| across processes to prevent blocking. However, none of these MPI commands have to be actually used. They are already implemented within the PETSc abstract interface.
+
 \subsection{Output}
 
 The main program outputs the results to a case directory. Within this directory, simulation parameters are written to a JSON metatdata file, while the time and solution vector are written to time step subdirectories. Visualizations are generated using a Python postprocessing script.
@@ -101,27 +125,62 @@ Both visual inspection of the results and parallel speedup tests are used to eva
 
 \subsection{Visualizations}
 
+\FloatBarrier
+
+First, a two-dimensional version of a wave pulse considered in one dimension is tested (Figure \ref{fig:replicate_1d_rho_p}). The underlying flow is $\overline{\rho} = 1$ and $\overline{\vb{u}} = (0.1, 0)$. Unfortunately, unlike in the one-dimensional case with the same parameters, oscillations quickly develop.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/replicate_1d_rho_p_0.png}
+	\includegraphics[width=0.5\linewidth]{images/replicate_1d_rho_p_10.png}
+	\includegraphics[width=0.5\linewidth]{images/replicate_1d_rho_p_20.png}
+	\caption{Wave Pulse: Plots for $\rho'$ at times $t = 0, 0.1, 0.2$ s.}
+	\label{fig:replicate_1d_rho_p}
+\end{figure}
+
+Then, a case is attempted with a circle of positive perturbation at the center of the domain (Figure \ref{fig:pulse_rho_p}). Here too, instabilities quickly take over.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/pulse_rho_p_0.png}
+	\includegraphics[width=0.5\linewidth]{images/pulse_rho_p_10.png}
+	\includegraphics[width=0.5\linewidth]{images/pulse_rho_p_20.png}
+	\caption{Circular Pulse: Plots for $\rho'$ at times $t = 0, 0.1, 0.2$ s.}
+	\label{fig:pulse_rho_p}
+\end{figure}
+
+\FloatBarrier
+
 \subsection{Performance tests}
 
-\begin{table}
+The second case was re-executed at different levels of refinement with different numbers of processors for parallel speedup tests.
+
+\begin{table}[h!]
 	\centering
 	\caption{Performance tests for a simple case.}
 	\label{tbl:perftests}
-	\begin{tabular}{c|ccc}
-		Number of Processes & \multicolumn{3}{ccc}{Number of Horizontal Grid Points $n_{x}$} \\
-		 & 1,001 & 10,001 & 100,001
+	\begin{tabular}{r|ccccc}
+		Processes & \multicolumn{5}{c}{Number of Lateral Grid Points $(n_{x}, n_{y})$} \\
+		 & 101 & 202 & 303 & 404 & 505 \\
 		\hline
-		1 &  &  &  \\
-		2 &  &  &  \\
-		4 &  &  &  \\
-		8 &  &  &  \\
+		 & \multicolumn{4}{c}{With file writing enabled} \\
+		\hline
+		1 & 13.239 s & 52.324 s & 116.074 s &  &  \\
+		2 & 13.357 s & 51.957 s & 116.437 s &  &  \\
+		4 & 13.260 s & 53.227 s & 114.786 s &  &  \\
+		8 & 14.563 s & 56.279 s & 128.568 s &  &  \\
+		\hline
+		 & \multicolumn{4}{c}{With file writing disabled} \\
+		\hline
+		1 & 1.310 s & 3.781 s & 7.705 s & 13.343 s & s \\
+		2 & 1.167 s & 3.593 s & 7.557 s & 13.038 s & s \\
+		4 & 1.034 s & 2.955 s & 6.118 s & 10.583 s & s \\
+		8 & 1.123 s & 3.138 s & 6.347 s & 10.791 s & s
 	\end{tabular}
 \end{table}
 
 \section{Conclusions}
 
-issue with boundary conditions/method
-
-limitations of derivation
+Unfortunately, this two-dimensional solver did not provide the satisfying results that were hoped for. It is possible that additional refinements with even smaller time steps need to be performed
 
 \end{document}
