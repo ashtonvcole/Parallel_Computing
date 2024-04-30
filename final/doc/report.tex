@@ -153,7 +153,7 @@ Then, a case is attempted with a circle of positive perturbation at the center o
 
 \subsection{Performance tests}
 
-The second case was re-executed at different levels of refinement with different numbers of processors for parallel speedup tests.
+The second case was re-executed at different levels of refinement, with different numbers of processors, with and without file output, for parallel speedup tests.
 
 \begin{table}[h!]
 	\centering
@@ -172,15 +172,17 @@ The second case was re-executed at different levels of refinement with different
 		\hline
 		 & \multicolumn{4}{c}{With file writing disabled} \\
 		\hline
-		1 & 1.310 s & 3.781 s & 7.705 s & 13.343 s & s \\
-		2 & 1.167 s & 3.593 s & 7.557 s & 13.038 s & s \\
-		4 & 1.034 s & 2.955 s & 6.118 s & 10.583 s & s \\
-		8 & 1.123 s & 3.138 s & 6.347 s & 10.791 s & s
+		1 & 1.310 s & 3.781 s & 7.705 s & 13.343 s & 20.549 s \\
+		2 & 1.167 s & 3.593 s & 7.557 s & 13.038 s & 19.834 s \\
+		4 & 1.034 s & 2.955 s & 6.118 s & 10.583 s & 16.110 s \\
+		8 & 1.123 s & 3.138 s & 6.347 s & 10.791 s & 16.176 s
 	\end{tabular}
 \end{table}
 
 \section{Conclusions}
 
-Unfortunately, this two-dimensional solver did not provide the satisfying results that were hoped for. It is possible that additional refinements with even smaller time steps need to be performed
+Unfortunately, this two-dimensional solver did not provide the satisfying results that were hoped for. The matrix assembly code and matrix itself were inspected carefully to ensure that they were built as expected. The oscillations suggest that the issue is one of numerical stability. It is possible that additional refinements with even smaller time steps will yield stable solutions, or the system may need to be solved with a different, perhaps implicit, method.
+
+However, at least some insights may be gleaned from the parallelization tests. At around $n_{x} = n_{y} = 303$, speedup advantage from parallel operations starts to appear. However, the biggest impact is from disabling file writing. This is because, when writing to file, the vector must be ordered correctly. Each process must write the vector in sequence, bringing the execution time back to the level of a sequential program.
 
 \end{document}
